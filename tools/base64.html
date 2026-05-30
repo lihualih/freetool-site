@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Base64 Encoder & Decoder - Free Online Tool | FreeTool.site</title>
+  <meta name="description" content="Free online Base64 encoder and decoder. Encode text to Base64 or decode Base64 to text instantly. Supports UTF-8.">
+  <meta name="keywords" content="Base64 encoder, Base64 decoder, Base64 encode, Base64 decode, Base64 converter">
+  <link rel="canonical" href="https://freetool.site/tools/base64.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <a href="/" class="logo">
+        <div class="logo-icon">🔧</div>
+        <span>FreeTool.site</span>
+      </a>
+      <nav class="nav-links">
+        <a href="/">Tools</a>
+        <button class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="tool-page">
+    <div class="breadcrumb">
+      <a href="/">Home</a> <span>/</span> <span>Base64 Encoder / Decoder</span>
+    </div>
+
+    <div class="tool-header">
+      <h1>🔄 Base64 Encoder / Decoder</h1>
+      <p>Encode text to Base64 or decode Base64 back to text. Supports UTF-8 characters. All processing in your browser.</p>
+    </div>
+
+    <!-- Input -->
+    <div class="tool-panel">
+      <h3>Input</h3>
+      <textarea id="b64-input" placeholder="Enter text or Base64 string here..."></textarea>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="encodeB64()">Encode → Base64</button>
+        <button class="btn btn-primary" onclick="decodeB64()">Decode ← Base64</button>
+        <button class="btn btn-secondary" onclick="swapText()">🔄 Swap</button>
+        <button class="btn btn-secondary" onclick="clearB64()">Clear</button>
+      </div>
+    </div>
+
+    <!-- Output -->
+    <div class="tool-panel">
+      <h3>Output</h3>
+      <div id="b64-output" class="output-box">Output will appear here...</div>
+      <div class="btn-group mt-2">
+        <button class="btn btn-secondary" onclick="copyB64Output()">📋 Copy Output</button>
+      </div>
+    </div>
+
+    <!-- Info -->
+    <div class="tool-panel">
+      <h3>About Base64</h3>
+      <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.7;">
+        Base64 is a binary-to-text encoding scheme that represents binary data using 64 printable ASCII characters.
+        It's commonly used to embed image data in HTML/CSS, encode email attachments, and transmit data in URLs and APIs.
+        This tool supports full UTF-8 encoding and decoding.
+      </p>
+    </div>
+
+    <div class="ad-slot">Advertisement</div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 FreeTool.site — Your data stays in your browser.</p>
+  </footer>
+
+  <script src="../js/common.js"></script>
+  <script>
+    const input = document.getElementById('b64-input');
+    const output = document.getElementById('b64-output');
+
+    function encodeB64() {
+      const text = input.value;
+      if (!text) { showToast('Please enter some text'); return; }
+      try {
+        // UTF-8 safe encoding
+        const encoded = btoa(unescape(encodeURIComponent(text)));
+        output.textContent = encoded;
+      } catch (e) {
+        output.textContent = '❌ Error: ' + e.message;
+      }
+    }
+
+    function decodeB64() {
+      const text = input.value.trim();
+      if (!text) { showToast('Please enter a Base64 string'); return; }
+      try {
+        // UTF-8 safe decoding
+        const decoded = decodeURIComponent(escape(atob(text)));
+        output.textContent = decoded;
+      } catch (e) {
+        output.textContent = '❌ Error: Invalid Base64 string';
+      }
+    }
+
+    function swapText() {
+      const out = output.textContent;
+      if (out && !out.startsWith('Output') && !out.startsWith('❌')) {
+        input.value = out;
+        output.textContent = 'Output will appear here...';
+      }
+    }
+
+    function clearB64() {
+      input.value = '';
+      output.textContent = 'Output will appear here...';
+    }
+
+    function copyB64Output() {
+      const text = output.textContent;
+      if (text && !text.startsWith('Output')) copyToClipboard(text);
+    }
+  </script>
+</body>
+</html>

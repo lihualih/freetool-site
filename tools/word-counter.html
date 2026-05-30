@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word & Character Counter - Free Online Tool | FreeTool.site</title>
+  <meta name="description" content="Free online word and character counter. Count words, characters, sentences, and paragraphs in real-time. Perfect for writers and students.">
+  <meta name="keywords" content="word counter, character counter, letter count, sentence counter, text statistics, word count tool">
+  <link rel="canonical" href="https://freetool.site/tools/word-counter.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <a href="/" class="logo">
+        <div class="logo-icon">🔧</div>
+        <span>FreeTool.site</span>
+      </a>
+      <nav class="nav-links">
+        <a href="/">Tools</a>
+        <button class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="tool-page">
+    <div class="breadcrumb">
+      <a href="/">Home</a> <span>/</span> <span>Word Counter</span>
+    </div>
+
+    <div class="tool-header">
+      <h1>📝 Word & Character Counter</h1>
+      <p>Count words, characters, sentences, and paragraphs in real-time. Great for essays, tweets, and content writing.</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-value" id="char-count">0</div>
+        <div class="stat-label">Characters</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="char-no-spaces">0</div>
+        <div class="stat-label">No Spaces</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="word-count">0</div>
+        <div class="stat-label">Words</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="sentence-count">0</div>
+        <div class="stat-label">Sentences</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="paragraph-count">0</div>
+        <div class="stat-label">Paragraphs</div>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="tool-panel">
+      <div class="form-group">
+        <textarea id="text-input" placeholder="Start typing or paste your text here..." style="min-height:300px"></textarea>
+      </div>
+
+      <!-- Text Transform Tools -->
+      <h3>Text Transforms</h3>
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="transformText('upper')">UPPER CASE</button>
+        <button class="btn btn-secondary" onclick="transformText('lower')">lower case</button>
+        <button class="btn btn-secondary" onclick="transformText('title')">Title Case</button>
+        <button class="btn btn-secondary" onclick="transformText('sentence')">Sentence case</button>
+        <button class="btn btn-secondary" onclick="transformText('reverse')">Reverse</button>
+        <button class="btn btn-secondary" onclick="copyText()">📋 Copy</button>
+        <button class="btn btn-secondary" onclick="clearText()">Clear</button>
+      </div>
+    </div>
+
+    <div class="ad-slot">Advertisement</div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 FreeTool.site — Your data stays in your browser.</p>
+  </footer>
+
+  <script src="../js/common.js"></script>
+  <script>
+    const textarea = document.getElementById('text-input');
+
+    function updateStats() {
+      const text = textarea.value;
+
+      // Characters
+      document.getElementById('char-count').textContent = text.length;
+      document.getElementById('char-no-spaces').textContent = text.replace(/\s/g, '').length;
+
+      // Words
+      const words = text.trim() === '' ? [] : text.trim().split(/\s+/);
+      document.getElementById('word-count').textContent = words.length;
+
+      // Sentences
+      const sentences = text.trim() === '' ? [] : text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+      document.getElementById('sentence-count').textContent = sentences.length;
+
+      // Paragraphs
+      const paragraphs = text.trim() === '' ? [] : text.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+      document.getElementById('paragraph-count').textContent = paragraphs.length || (text.trim() ? 1 : 0);
+    }
+
+    textarea.addEventListener('input', debounce(updateStats, 100));
+
+    function transformText(type) {
+      let text = textarea.value;
+      switch(type) {
+        case 'upper': textarea.value = text.toUpperCase(); break;
+        case 'lower': textarea.value = text.toLowerCase(); break;
+        case 'title':
+          textarea.value = text.replace(/\b\w/g, c => c.toUpperCase());
+          break;
+        case 'sentence':
+          textarea.value = text.toLowerCase().replace(/(^\s*\w|[.!?]\s+\w)/g, c => c.toUpperCase());
+          break;
+        case 'reverse':
+          textarea.value = text.split('').reverse().join('');
+          break;
+      }
+      updateStats();
+    }
+
+    function copyText() {
+      if (textarea.value) copyToClipboard(textarea.value);
+    }
+
+    function clearText() {
+      textarea.value = '';
+      updateStats();
+    }
+
+    // Init
+    updateStats();
+  </script>
+</body>
+</html>

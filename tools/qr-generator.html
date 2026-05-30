@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Code Generator - Free Online Tool | FreeTool.site</title>
+  <meta name="description" content="Free online QR code generator. Create QR codes from any text or URL. Download as PNG. Customizable size and colors.">
+  <meta name="keywords" content="QR code generator, QR code creator, make QR code, free QR code, QR code maker">
+  <link rel="canonical" href="https://freetool.site/tools/qr-generator.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <a href="/" class="logo">
+        <div class="logo-icon">🔧</div>
+        <span>FreeTool.site</span>
+      </a>
+      <nav class="nav-links">
+        <a href="/">Tools</a>
+        <button class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="tool-page">
+    <div class="breadcrumb">
+      <a href="/">Home</a> <span>/</span> <span>QR Code Generator</span>
+    </div>
+
+    <div class="tool-header">
+      <h1>📱 QR Code Generator</h1>
+      <p>Generate QR codes from any text, URL, or data. Download as PNG image. Customizable size and error correction level.</p>
+    </div>
+
+    <!-- Input -->
+    <div class="tool-panel">
+      <h3>Content</h3>
+      <div class="form-group">
+        <label>Text or URL</label>
+        <textarea id="qr-input" placeholder="Enter text, URL, email, phone number, WiFi config...&#10;&#10;Examples:&#10;https://example.com&#10;Hello World&#10;WIFI:T:WPA;S:MyNetwork;P:password123;;" style="min-height:100px"></textarea>
+      </div>
+
+      <div class="options-row">
+        <div class="form-group" style="flex:1">
+          <label>Size</label>
+          <select id="qr-size">
+            <option value="200">200 x 200</option>
+            <option value="300" selected>300 x 300</option>
+            <option value="400">400 x 400</option>
+            <option value="500">500 x 500</option>
+            <option value="800">800 x 800</option>
+          </select>
+        </div>
+        <div class="form-group" style="flex:1">
+          <label>Error Correction</label>
+          <select id="qr-ec">
+            <option value="L">Low (7%)</option>
+            <option value="M" selected>Medium (15%)</option>
+            <option value="Q">Quartile (25%)</option>
+            <option value="H">High (30%)</option>
+          </select>
+        </div>
+        <div class="form-group" style="flex:1">
+          <label>Foreground</label>
+          <input type="color" id="qr-fg" value="#000000" style="height:42px">
+        </div>
+        <div class="form-group" style="flex:1">
+          <label>Background</label>
+          <input type="color" id="qr-bg" value="#ffffff" style="height:42px">
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="generateQR()">Generate QR Code</button>
+      </div>
+    </div>
+
+    <!-- QR Output -->
+    <div class="tool-panel">
+      <h3>Generated QR Code</h3>
+      <div class="qr-output">
+        <canvas id="qr-canvas" width="300" height="300"></canvas>
+      </div>
+      <div id="qr-info" style="text-align:center;color:var(--text-secondary);font-size:0.85rem;margin-top:8px;"></div>
+      <div class="btn-group" style="justify-content:center;">
+        <button class="btn btn-primary" onclick="downloadQR()">⬇️ Download PNG</button>
+        <button class="btn btn-secondary" onclick="copyQR()">📋 Copy to Clipboard</button>
+      </div>
+    </div>
+
+    <div class="ad-slot">Advertisement</div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 FreeTool.site — QR codes are generated locally in your browser.</p>
+  </footer>
+
+  <script src="../js/common.js"></script>
+  <script src="../js/qrcode.js"></script>
+  <script>
+    function generateQR() {
+      const text = document.getElementById('qr-input').value.trim();
+      const canvas = document.getElementById('qr-canvas');
+      const ctx = canvas.getContext('2d');
+      const info = document.getElementById('qr-info');
+
+      if (!text) {
+        ctx.fillStyle = '#f1f5f9';
+        ctx.fillRect(0, 0, 300, 300);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Enter text or URL above', 150, 155);
+        info.textContent = '';
+        return;
+      }
+
+      try {
+        const ecLevel = document.getElementById('qr-ec').value;
+        const result = QRCode.generate(text, ecLevel);
+
+        const targetSize = parseInt(document.getElementById('qr-size').value);
+        const fg = document.getElementById('qr-fg').value;
+        const bg = document.getElementById('qr-bg').value;
+        const quietZone = 4;
+        const totalModules = result.size + quietZone * 2;
+        const cellSize = Math.floor(targetSize / totalModules);
+        const actualSize = cellSize * totalModules;
+
+        canvas.width = actualSize;
+        canvas.height = actualSize;
+
+        // Background
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, actualSize, actualSize);
+
+        // Draw modules
+        ctx.fillStyle = fg;
+        for (let r = 0; r < result.size; r++) {
+          for (let c = 0; c < result.size; c++) {
+            if (result.modules[r][c]) {
+              ctx.fillRect(
+                (c + quietZone) * cellSize,
+                (r + quietZone) * cellSize,
+                cellSize,
+                cellSize
+              );
+            }
+          }
+        }
+
+        info.textContent = `Version ${result.version} | ${result.size}×${result.size} modules | EC: ${ecLevel}`;
+      } catch (e) {
+        canvas.width = 300;
+        canvas.height = 100;
+        ctx.fillStyle = '#fef2f2';
+        ctx.fillRect(0, 0, 300, 100);
+        ctx.fillStyle = '#ef4444';
+        ctx.font = '13px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(e.message || 'Error generating QR code', 150, 55);
+        info.textContent = '';
+      }
+    }
+
+    function downloadQR() {
+      const canvas = document.getElementById('qr-canvas');
+      if (canvas.width <= 300) {
+        showToast('Generate a QR code first');
+        return;
+      }
+      const link = document.createElement('a');
+      link.download = 'qrcode.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToast('QR code downloaded!');
+    }
+
+    async function copyQR() {
+      const canvas = document.getElementById('qr-canvas');
+      if (canvas.width <= 300) {
+        showToast('Generate a QR code first');
+        return;
+      }
+      try {
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
+        showToast('QR code copied to clipboard!');
+      } catch {
+        showToast('Copy not supported. Use Download instead.');
+      }
+    }
+
+    // Debounced auto-generate
+    const debouncedGenerate = debounce(generateQR, 300);
+    document.getElementById('qr-input').addEventListener('input', debouncedGenerate);
+    document.getElementById('qr-size').addEventListener('change', generateQR);
+    document.getElementById('qr-ec').addEventListener('change', generateQR);
+    document.getElementById('qr-fg').addEventListener('input', generateQR);
+    document.getElementById('qr-bg').addEventListener('input', generateQR);
+
+    // Init
+    generateQR();
+  </script>
+</body>
+</html>

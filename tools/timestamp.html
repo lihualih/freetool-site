@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unix Timestamp Converter - Free Online Tool | FreeTool.site</title>
+  <meta name="description" content="Free online Unix timestamp converter. Convert between Unix timestamps and human-readable dates. Live current timestamp.">
+  <meta name="keywords" content="Unix timestamp converter, epoch converter, timestamp to date, date to timestamp, Unix time">
+  <link rel="canonical" href="https://freetool.site/tools/timestamp.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <a href="/" class="logo">
+        <div class="logo-icon">🔧</div>
+        <span>FreeTool.site</span>
+      </a>
+      <nav class="nav-links">
+        <a href="/">Tools</a>
+        <button class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="tool-page">
+    <div class="breadcrumb">
+      <a href="/">Home</a> <span>/</span> <span>Timestamp Converter</span>
+    </div>
+
+    <div class="tool-header">
+      <h1>⏱️ Unix Timestamp Converter</h1>
+      <p>Convert between Unix timestamps and human-readable dates. Current timestamp updates live.</p>
+    </div>
+
+    <!-- Current Timestamp (Live) -->
+    <div class="tool-panel">
+      <h3>Current Unix Timestamp (Live)</h3>
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-value" id="live-ts" style="font-size:1.5rem;">0</div>
+          <div class="stat-label">Seconds</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="live-ts-ms" style="font-size:1.5rem;">0</div>
+          <div class="stat-label">Milliseconds</div>
+        </div>
+      </div>
+      <div id="live-date" style="text-align:center;color:var(--text-secondary);font-size:0.9rem;"></div>
+    </div>
+
+    <!-- Timestamp to Date -->
+    <div class="tool-panel">
+      <h3>Timestamp → Date</h3>
+      <div class="form-group">
+        <label>Enter Unix Timestamp</label>
+        <input type="text" id="ts-input" placeholder="e.g. 1700000000" oninput="tsToDate()">
+      </div>
+      <div class="options-row">
+        <div class="option-item">
+          <input type="radio" name="ts-unit" value="seconds" id="ts-sec" checked onchange="tsToDate()">
+          <label for="ts-sec">Seconds</label>
+        </div>
+        <div class="option-item">
+          <input type="radio" name="ts-unit" value="milliseconds" id="ts-ms" onchange="tsToDate()">
+          <label for="ts-ms">Milliseconds</label>
+        </div>
+      </div>
+      <div id="ts-result" class="output-box" style="min-height:40px;">Enter a timestamp above</div>
+      <div class="btn-group mt-2">
+        <button class="btn btn-secondary" onclick="useCurrentTs()">Use Current Timestamp</button>
+        <button class="btn btn-secondary" onclick="copyTsResult()">📋 Copy</button>
+      </div>
+    </div>
+
+    <!-- Date to Timestamp -->
+    <div class="tool-panel">
+      <h3>Date → Timestamp</h3>
+      <div class="options-row">
+        <div class="form-group" style="flex:1">
+          <label>Date & Time</label>
+          <input type="text" id="date-input" placeholder="e.g. 2025-01-15 12:00:00" oninput="dateToTs()">
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="useCurrentDate()">Use Current Date</button>
+        <button class="btn btn-secondary" onclick="copyDateResult()">📋 Copy</button>
+      </div>
+      <div id="date-result" class="output-box mt-2" style="min-height:40px;">Enter a date above</div>
+    </div>
+
+    <div class="ad-slot">Advertisement</div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 FreeTool.site — Timestamps are computed locally in your browser.</p>
+  </footer>
+
+  <script src="../js/common.js"></script>
+  <script>
+    // Live timestamp
+    function updateLiveTs() {
+      const now = Math.floor(Date.now() / 1000);
+      document.getElementById('live-ts').textContent = now;
+      document.getElementById('live-ts-ms').textContent = Date.now();
+      document.getElementById('live-date').textContent = new Date().toISOString().replace('T', ' ').replace('Z', ' UTC');
+    }
+    updateLiveTs();
+    setInterval(updateLiveTs, 1000);
+
+    function tsToDate() {
+      const val = document.getElementById('ts-input').value.trim();
+      const result = document.getElementById('ts-result');
+      if (!val || isNaN(val)) { result.textContent = 'Enter a valid number'; return; }
+
+      const isMs = document.getElementById('ts-ms').checked;
+      const num = parseInt(val);
+      const date = new Date(isMs ? num : num * 1000);
+
+      if (isNaN(date.getTime())) { result.textContent = 'Invalid timestamp'; return; }
+
+      result.textContent = [
+        `Local:    ${date.toLocaleString()}`,
+        `UTC:      ${date.toISOString().replace('T', ' ').replace('Z', ' UTC')}`,
+        `ISO:      ${date.toISOString()}`,
+        `Relative: ${getRelativeTime(date)}`
+      ].join('\n');
+    }
+
+    function dateToTs() {
+      const val = document.getElementById('date-input').value.trim();
+      const result = document.getElementById('date-result');
+      if (!val) { result.textContent = 'Enter a date above'; return; }
+
+      const date = new Date(val);
+      if (isNaN(date.getTime())) { result.textContent = 'Invalid date format. Try: 2025-01-15 12:00:00'; return; }
+
+      const ts = Math.floor(date.getTime() / 1000);
+      result.textContent = [
+        `Seconds:      ${ts}`,
+        `Milliseconds: ${date.getTime()}`,
+        `ISO:          ${date.toISOString()}`
+      ].join('\n');
+    }
+
+    function getRelativeTime(date) {
+      const now = new Date();
+      const diff = Math.floor((now - date) / 1000);
+      const absDiff = Math.abs(diff);
+      const future = diff < 0;
+
+      let str;
+      if (absDiff < 60) str = `${absDiff} seconds`;
+      else if (absDiff < 3600) str = `${Math.floor(absDiff/60)} minutes`;
+      else if (absDiff < 86400) str = `${Math.floor(absDiff/3600)} hours`;
+      else if (absDiff < 2592000) str = `${Math.floor(absDiff/86400)} days`;
+      else if (absDiff < 31536000) str = `${Math.floor(absDiff/2592000)} months`;
+      else str = `${Math.floor(absDiff/31536000)} years`;
+
+      return future ? `in ${str}` : `${str} ago`;
+    }
+
+    function useCurrentTs() {
+      const isMs = document.getElementById('ts-ms').checked;
+      document.getElementById('ts-input').value = isMs ? Date.now() : Math.floor(Date.now()/1000);
+      tsToDate();
+    }
+
+    function useCurrentDate() {
+      const now = new Date();
+      document.getElementById('date-input').value = now.toISOString().slice(0,19).replace('T', ' ');
+      dateToTs();
+    }
+
+    function copyTsResult() {
+      const text = document.getElementById('ts-result').textContent;
+      if (text && !text.startsWith('Enter')) copyToClipboard(text);
+    }
+
+    function copyDateResult() {
+      const text = document.getElementById('date-result').textContent;
+      if (text && !text.startsWith('Enter')) copyToClipboard(text);
+    }
+  </script>
+</body>
+</html>

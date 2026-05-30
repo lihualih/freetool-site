@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>URL Encoder & Decoder - Free Online Tool | FreeTool.site</title>
+  <meta name="description" content="Free online URL encoder and decoder. Encode or decode URLs and URI components for safe transmission. Handles special characters.">
+  <meta name="keywords" content="URL encoder, URL decoder, URL encode, URL decode, percent encoding, URI encoder">
+  <link rel="canonical" href="https://freetool.site/tools/url-encoder.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <a href="/" class="logo">
+        <div class="logo-icon">🔧</div>
+        <span>FreeTool.site</span>
+      </a>
+      <nav class="nav-links">
+        <a href="/">Tools</a>
+        <button class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="tool-page">
+    <div class="breadcrumb">
+      <a href="/">Home</a> <span>/</span> <span>URL Encoder / Decoder</span>
+    </div>
+
+    <div class="tool-header">
+      <h1>🔗 URL Encoder / Decoder</h1>
+      <p>Encode or decode URLs and URI components. Safely handle special characters for web transmission.</p>
+    </div>
+
+    <!-- Mode Toggle -->
+    <div class="tool-panel">
+      <h3>Mode</h3>
+      <div class="btn-group">
+        <button class="btn btn-primary" id="btn-encode" onclick="setMode('encode')">Encode</button>
+        <button class="btn btn-secondary" id="btn-decode" onclick="setMode('decode')">Decode</button>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="tool-panel">
+      <h3 id="url-input-label">Input (Plain Text)</h3>
+      <textarea id="url-input" placeholder="Enter text or URL to encode..."></textarea>
+      <div class="btn-group">
+        <button class="btn btn-primary" id="btn-action" onclick="processUrl()">Encode →</button>
+        <button class="btn btn-secondary" onclick="clearUrl()">Clear</button>
+      </div>
+    </div>
+
+    <!-- Output -->
+    <div class="tool-panel">
+      <h3 id="url-output-label">Output (Encoded)</h3>
+      <div id="url-output" class="output-box">Output will appear here...</div>
+      <div class="btn-group mt-2">
+        <button class="btn btn-secondary" onclick="copyUrlOutput()">📋 Copy Output</button>
+      </div>
+    </div>
+
+    <!-- Component Encoding -->
+    <div class="tool-panel">
+      <h3>URL Components Breakdown</h3>
+      <textarea id="url-breakdown-input" placeholder="Paste a full URL to break it down...&#10;Example: https://example.com/path?name=hello world&lang=en" oninput="breakdownUrl()"></textarea>
+      <div id="url-breakdown" class="output-box mt-2" style="min-height:40px;">Enter a URL above to see its components</div>
+    </div>
+
+    <div class="ad-slot">Advertisement</div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 FreeTool.site — Your data stays in your browser.</p>
+  </footer>
+
+  <script src="../js/common.js"></script>
+  <script>
+    let mode = 'encode';
+
+    function setMode(m) {
+      mode = m;
+      const btnEncode = document.getElementById('btn-encode');
+      const btnDecode = document.getElementById('btn-decode');
+      const btnAction = document.getElementById('btn-action');
+      const inputLabel = document.getElementById('url-input-label');
+      const outputLabel = document.getElementById('url-output-label');
+
+      if (m === 'encode') {
+        btnEncode.className = 'btn btn-primary';
+        btnDecode.className = 'btn btn-secondary';
+        btnAction.textContent = 'Encode →';
+        inputLabel.textContent = 'Input (Plain Text)';
+        outputLabel.textContent = 'Output (Encoded)';
+      } else {
+        btnEncode.className = 'btn btn-secondary';
+        btnDecode.className = 'btn btn-primary';
+        btnAction.textContent = '← Decode';
+        inputLabel.textContent = 'Input (Encoded URL)';
+        outputLabel.textContent = 'Output (Decoded)';
+      }
+    }
+
+    function processUrl() {
+      const val = document.getElementById('url-input').value;
+      if (!val) { showToast('Please enter some text'); return; }
+
+      try {
+        const result = mode === 'encode' ? encodeURIComponent(val) : decodeURIComponent(val);
+        document.getElementById('url-output').textContent = result;
+      } catch (e) {
+        document.getElementById('url-output').textContent = '❌ Error: ' + e.message;
+      }
+    }
+
+    function breakdownUrl() {
+      const val = document.getElementById('url-breakdown-input').value.trim();
+      const out = document.getElementById('url-breakdown');
+      if (!val) { out.textContent = 'Enter a URL above to see its components'; return; }
+
+      try {
+        const url = new URL(val);
+        const parts = [
+          `Protocol: ${url.protocol}`,
+          `Host: ${url.host}`,
+          `Hostname: ${url.hostname}`,
+          `Port: ${url.port || '(default)'}`,
+          `Pathname: ${url.pathname}`,
+          `Search: ${url.search || '(none)'}`,
+          `Hash: ${url.hash || '(none)'}`
+        ];
+
+        if (url.searchParams.toString()) {
+          parts.push('\nQuery Parameters:');
+          for (const [key, value] of url.searchParams) {
+            parts.push(`  ${key} = ${value}`);
+          }
+        }
+
+        out.textContent = parts.join('\n');
+      } catch {
+        out.textContent = '⚠️ Not a valid URL. Try including the protocol (https://...)';
+      }
+    }
+
+    function clearUrl() {
+      document.getElementById('url-input').value = '';
+      document.getElementById('url-output').textContent = 'Output will appear here...';
+    }
+
+    function copyUrlOutput() {
+      const text = document.getElementById('url-output').textContent;
+      if (text && !text.startsWith('Output')) copyToClipboard(text);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON Formatter & Validator - Free Online Tool | FreeTool.site</title>
+  <meta name="description" content="Free online JSON formatter and validator. Beautify, minify, and validate JSON data instantly in your browser. No data uploaded.">
+  <meta name="keywords" content="JSON formatter, JSON validator, JSON beautifier, JSON minify, online JSON tool">
+  <link rel="canonical" href="https://freetool.site/tools/json-formatter.html">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <a href="/" class="logo">
+        <div class="logo-icon">🔧</div>
+        <span>FreeTool.site</span>
+      </a>
+      <nav class="nav-links">
+        <a href="/">Tools</a>
+        <button class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="tool-page">
+    <div class="breadcrumb">
+      <a href="/">Home</a> <span>/</span> <span>JSON Formatter</span>
+    </div>
+
+    <div class="tool-header">
+      <h1>{ } JSON Formatter & Validator</h1>
+      <p>Beautify, minify, and validate your JSON data. All processing happens in your browser — your data never leaves your device.</p>
+    </div>
+
+    <!-- Input -->
+    <div class="tool-panel">
+      <h3>Input JSON</h3>
+      <textarea id="json-input" placeholder='Paste your JSON here...&#10;&#10;Example:&#10;{&#10;  "name": "John",&#10;  "age": 30,&#10;  "hobbies": ["reading", "coding"]&#10;}'></textarea>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="formatJson()">Format / Beautify</button>
+        <button class="btn btn-secondary" onclick="minifyJson()">Minify</button>
+        <button class="btn btn-secondary" onclick="validateJson()">Validate</button>
+        <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+      </div>
+    </div>
+
+    <!-- Output -->
+    <div class="tool-panel">
+      <h3>Output <span id="json-status" style="font-weight:400;font-size:0.85rem;margin-left:8px;"></span></h3>
+      <div id="json-output" class="output-box json">Output will appear here...</div>
+      <div class="btn-group mt-2">
+        <button class="btn btn-secondary" onclick="copyOutput()">📋 Copy Output</button>
+      </div>
+    </div>
+
+    <!-- Ad -->
+    <div class="ad-slot">Advertisement</div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 FreeTool.site — Your data stays in your browser.</p>
+  </footer>
+
+  <script src="../js/common.js"></script>
+  <script>
+    const input = document.getElementById('json-input');
+    const output = document.getElementById('json-output');
+    const status = document.getElementById('json-status');
+
+    function formatJson() {
+      const val = input.value.trim();
+      if (!val) { showToast('Please paste some JSON first'); return; }
+      const { data, error } = safeJsonParse(val);
+      if (error) {
+        output.textContent = '❌ Invalid JSON: ' + error;
+        status.innerHTML = '<span style="color:var(--error)">Invalid</span>';
+        return;
+      }
+      output.textContent = JSON.stringify(data, null, 2);
+      status.innerHTML = '<span style="color:var(--success)">✓ Valid JSON</span>';
+    }
+
+    function minifyJson() {
+      const val = input.value.trim();
+      if (!val) { showToast('Please paste some JSON first'); return; }
+      const { data, error } = safeJsonParse(val);
+      if (error) {
+        output.textContent = '❌ Invalid JSON: ' + error;
+        status.innerHTML = '<span style="color:var(--error)">Invalid</span>';
+        return;
+      }
+      output.textContent = JSON.stringify(data);
+      status.innerHTML = '<span style="color:var(--success)">✓ Minified</span>';
+    }
+
+    function validateJson() {
+      const val = input.value.trim();
+      if (!val) { showToast('Please paste some JSON first'); return; }
+      const { error } = safeJsonParse(val);
+      if (error) {
+        output.textContent = '❌ Invalid JSON:\n\n' + error;
+        status.innerHTML = '<span style="color:var(--error)">Invalid</span>';
+      } else {
+        output.textContent = '✅ Valid JSON! No errors found.';
+        status.innerHTML = '<span style="color:var(--success)">Valid</span>';
+      }
+    }
+
+    function clearAll() {
+      input.value = '';
+      output.textContent = 'Output will appear here...';
+      status.innerHTML = '';
+    }
+
+    function copyOutput() {
+      const text = output.textContent;
+      if (text && !text.startsWith('Output will')) {
+        copyToClipboard(text);
+      }
+    }
+  </script>
+</body>
+</html>
